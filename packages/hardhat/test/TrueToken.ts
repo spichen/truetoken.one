@@ -50,7 +50,9 @@ describe("TrueToken", function () {
       const wallet = ethers.Wallet.createRandom();
       const tx = await trueToken.registerBrand(brand.address);
       await tx.wait();
-      await trueToken.connect(brand).mint(wallet.address, "/asset/metadata");
+      await expect(trueToken.connect(brand).mint(wallet.address, "/asset/metadata"))
+        .to.emit(trueToken, "TokenMint")
+        .withArgs(wallet.address, 1);
 
       expect(await trueToken.balanceOf(wallet.address, 1)).to.equal(1);
       expect(await trueToken.tokenOf(wallet.address, 1)).to.equal(1);

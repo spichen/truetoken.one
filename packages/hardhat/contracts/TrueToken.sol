@@ -8,6 +8,8 @@ contract TrueToken is ERC1155 {
   uint256 private _currentBrandID = 0;
   uint256 private _currentTokenID = 0;
   event BrandRegistered(address indexed brandAddress, uint256 indexed brandId);
+  event TokenMint(address indexed walletAddress, uint256 indexed tokenId);
+
   mapping(address => uint256) private _brandAddressIdMapping;
   mapping(uint256 => uint256) private _tokenBrandMapping;
   mapping(address => mapping (uint256 => uint256)) private _accountTokenMapping;
@@ -30,7 +32,9 @@ contract TrueToken is ERC1155 {
       _accountTokenMapping[customerAddress][brandId] = tokenId;
       _tokenLogMapping[tokenId].push(uri);
       _tokenBrandMapping[tokenId] = brandId;
+      emit TokenMint(customerAddress, tokenId);
       _mint(customerAddress, brandId, 1, bytes(uri));
+      _incrementTokenId();
   }
 
   function addLog(uint256 tokenId, string memory uri) public {
