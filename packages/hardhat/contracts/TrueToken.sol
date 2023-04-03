@@ -2,13 +2,13 @@ pragma solidity ^0.8.2;  //Do not change the solidity version as it negativly im
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
-contract TrueToken is ERC1155, Ownable {
+contract TrueToken is ERC1155 {
   uint256 private _currentBrandID = 0;
   uint256 private _currentTokenID = 0;
   event BrandRegistered(address indexed brandAddress, uint256 indexed brandId);
-  mapping(uint256 => address) private _brandIdAddressMapping;
+  mapping(address => uint256) private _brandAddressIdMapping;
   mapping(uint256 => uint256) private _tokenBrandMapping;
   mapping(address => mapping (uint256 => uint256)) private _accountTokenMapping;
   mapping(uint256 => string[]) private _tokenLogMapping;
@@ -17,14 +17,14 @@ contract TrueToken is ERC1155, Ownable {
 
   function registerBrand(address brandAddress) public {
       uint256 brandID = _getNextBrandID();
-      _brandIdAddressMapping[brandID] = brandAddress;
+      _brandAddressIdMapping[brandAddress] = brandID;
       _incrementBrandId();
       emit BrandRegistered(brandAddress, brandID);
   }
 
-  function mint(address customerAddress, uint256 brandId, string memory uri) public {
-      require(msg.sender == _brandIdAddressMapping[brandId], "Only brand owner can mint token");
-
+  function mint(address customerAddress, string memory uri) public {
+      require(_brandAddressIdMapping[msg.sender] > 0, "Only registered brand can mint token");
+      uint256 brandId = _brandAddressIdMapping[msg.sender];
       uint256 tokenId = _getNextTokenID();
       _accountTokenMapping[customerAddress][brandId] = tokenId;
       _tokenLogMapping[tokenId].push(uri);
@@ -33,13 +33,13 @@ contract TrueToken is ERC1155, Ownable {
   }
 
   function addLog(uint256 tokenId, string memory uri) public {
-      require(msg.sender == _brandIdAddressMapping[_tokenBrandMapping[tokenId]], "Only token issued brand can add log");
+      require(_brandAddressIdMapping[msg.sender] == _tokenBrandMapping[tokenId] && _brandAddressIdMapping[msg.sender] > 0, "Only token issued brand can add log");
 
       _tokenLogMapping[tokenId].push(uri);
   }
   
-  function addressOf(uint256 brandId) public view virtual returns (address) {
-      return _brandIdAddressMapping[brandId];
+  function brandIdOfAddress(address account) public view virtual returns (uint256) {
+      return _brandAddressIdMapping[account];
   }
   
   function tokenOf(address account, uint256 brandId) public view virtual returns (uint256) {
@@ -50,7 +50,7 @@ contract TrueToken is ERC1155, Ownable {
       return _tokenLogMapping[tokenId];
   }
 
-  function brandIdOf(uint256 tokenId) public view virtual returns (uint256) {
+  function brandIdOfToken(uint256 tokenId) public view virtual returns (uint256) {
       return _tokenBrandMapping[tokenId];
   }
 

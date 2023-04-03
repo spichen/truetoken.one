@@ -22,9 +22,10 @@ describe("TrueToken", function () {
     it("Should register brand", async function () {
       const [brand] = await ethers.getSigners();
 
-      await trueToken.registerBrand(brand.address);
+      const tx = await trueToken.registerBrand(brand.address);
+      await tx.wait();
 
-      expect(await trueToken.addressOf(1)).to.equal(brand.address);
+      expect(await trueToken.brandIdOfAddress(brand.address)).to.equal(1);
     });
     it("Should emit event when registering brand", async function () {
       const [brand] = await ethers.getSigners();
@@ -37,21 +38,24 @@ describe("TrueToken", function () {
 
   describe("Mint Token", () => {
     it("Should reject if message is sent from non brand address", async function () {
+      const [nonRegisteredBrand] = await ethers.getSigners();
       const wallet = ethers.Wallet.createRandom();
-      await expect(trueToken.mint(wallet.address, 1, "23")).to.be.revertedWith("Only brand owner can mint token");
+      await expect(trueToken.connect(nonRegisteredBrand).mint(wallet.address, "23")).to.be.revertedWith(
+        "Only registered brand can mint token",
+      );
     });
 
     it("Should mint token to customer", async function () {
       const [brand] = await ethers.getSigners();
-      await trueToken.registerBrand(brand.address);
-
       const wallet = ethers.Wallet.createRandom();
-      await trueToken.mint(wallet.address, 1, "/asset/metadata");
+      const tx = await trueToken.registerBrand(brand.address);
+      await tx.wait();
+      await trueToken.connect(brand).mint(wallet.address, "/asset/metadata");
 
       expect(await trueToken.balanceOf(wallet.address, 1)).to.equal(1);
       expect(await trueToken.tokenOf(wallet.address, 1)).to.equal(1);
       expect((await trueToken.logsOf(1))[0]).to.equal("/asset/metadata");
-      expect(await trueToken.brandIdOf(1)).to.equal(1);
+      expect(await trueToken.brandIdOfToken(1)).to.equal(1);
     });
   });
 
@@ -62,10 +66,10 @@ describe("TrueToken", function () {
 
     it("Should add log to token", async function () {
       const [brand] = await ethers.getSigners();
-      await trueToken.registerBrand(brand.address);
-
       const wallet = ethers.Wallet.createRandom();
-      await trueToken.mint(wallet.address, 1, "/asset/metadata");
+
+      await (await trueToken.registerBrand(brand.address)).wait();
+      await trueToken.connect(brand).mint(wallet.address, "/asset/metadata");
 
       await trueToken.addLog(1, "log-hash");
 
