@@ -16,6 +16,7 @@ contract TrueToken is ERC1155 {
   constructor(string memory _uri) ERC1155(_uri) {}
 
   function registerBrand(address brandAddress) public {
+      require(_brandAddressIdMapping[brandAddress] == 0, "brand already registered");
       uint256 brandID = _getNextBrandID();
       _brandAddressIdMapping[brandAddress] = brandID;
       _incrementBrandId();
