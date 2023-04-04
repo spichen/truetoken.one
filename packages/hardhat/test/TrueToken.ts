@@ -66,6 +66,12 @@ describe("TrueToken", function () {
       await expect(trueToken.addLog(1, "23")).to.be.revertedWith("Only token issued brand can add log");
     });
 
+    it.only("Should asdasd if sender is not token issued brand", async function () {
+      const res = await trueToken.sala();
+
+      console.log(res.toNumber());
+    });
+
     it("Should add log to token", async function () {
       const [brand] = await ethers.getSigners();
       const wallet = ethers.Wallet.createRandom();

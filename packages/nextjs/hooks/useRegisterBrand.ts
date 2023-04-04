@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useScaffoldContractWrite, useScaffoldEventSubscriber } from "./scaffold-eth";
 
 export const useRegisterBrand = (brandAddress: string) => {
-  const [brandId, setBrandId] = useState<number | undefined>(undefined);
+  const [brandId, setBrandId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const { writeAsync, isError, error } = useScaffoldContractWrite({
     contractName: "TrueToken",
@@ -22,7 +22,7 @@ export const useRegisterBrand = (brandAddress: string) => {
     listener: (...[address, brandId]) => {
       if (address === brandAddress) {
         setIsLoading(false);
-        setBrandId(brandId.toNumber());
+        setBrandId(brandId._hex);
       }
     },
     once: true,

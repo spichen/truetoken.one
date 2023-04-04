@@ -6,28 +6,36 @@ import { useAccount } from "wagmi";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import ManageBrand from "~~/components/ManageBrand";
 import RegisterBrand from "~~/components/RegisterBrand";
-import { useAutoConnect, useNetworkColor, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import {
+  useAutoConnect,
+  useDeployedContractInfo,
+  useNetworkColor,
+  useScaffoldContractRead,
+} from "~~/hooks/scaffold-eth";
 import { getTargetNetwork, notification } from "~~/utils/scaffold-eth";
 
 const Brand: NextPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
-  const [brandId, setBrandId] = useState<number | undefined>();
+  const [brandId, setBrandId] = useState<string | undefined>();
   useAutoConnect();
   const networkColor = useNetworkColor();
   const configuredNetwork = getTargetNetwork();
   const { address } = useAccount();
 
+  const { data: contract } = useDeployedContractInfo("TrueToken");
+
+  console.log(contract);
+
   const { data } = useScaffoldContractRead({
     contractName: "TrueToken",
-    functionName: "brandIdOfAddress",
+    functionName: "brandIdOf",
     args: [address],
   });
 
   useEffect(() => {
-    if (data && data.toNumber() > 0) {
-      console.log(data.toNumber());
+    if (data && data.toString() !== "0") {
       setIsRegistered(true);
-      setBrandId(data?.toNumber());
+      setBrandId(data?.toString());
     }
   }, [data]);
   return (

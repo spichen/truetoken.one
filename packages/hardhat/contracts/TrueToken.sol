@@ -1,77 +1,78 @@
-pragma solidity ^0.8.2;  //Do not change the solidity version as it negativly impacts submission grading
+pragma solidity ^0.8.2; //Do not change the solidity version as it negativly impacts submission grading
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "hardhat/console.sol";
 
 contract TrueToken is ERC1155 {
-  uint256 private _currentBrandID = 0;
-  uint256 private _currentTokenID = 0;
+  struct Token {
+    uint256 id;
+    address owner;
+    string metadataCID;
+    string[] logCIDs;
+  }
+
+  uint256 constant BRAND_MASK = uint256(type(uint128).max) << 128;
+  uint256 constant TOKEN_INDEX_MASK = type(uint128).max;
+  uint256 private _brandIDNonce = 0;
+  uint256 private _tokenIndexNonce = 0;
+  mapping(address => uint256) private _addressBrandIdMapping;
+  mapping(uint256 => Token) private _tokens;
+  mapping(uint256 => Token[]) private _brandTokens;
+
   event BrandRegistered(address indexed brandAddress, uint256 indexed brandId);
   event TokenMint(address indexed walletAddress, uint256 indexed tokenId);
-
-  mapping(address => uint256) private _brandAddressIdMapping;
-  mapping(uint256 => uint256) private _tokenBrandMapping;
-  mapping(address => mapping (uint256 => uint256)) private _accountTokenMapping;
-  mapping(uint256 => string[]) private _tokenLogMapping;
 
   constructor(string memory _uri) ERC1155(_uri) {}
 
   function registerBrand(address brandAddress) public {
-      require(_brandAddressIdMapping[brandAddress] == 0, "brand already registered");
-      uint256 brandID = _getNextBrandID();
-      _brandAddressIdMapping[brandAddress] = brandID;
-      _incrementBrandId();
-      emit BrandRegistered(brandAddress, brandID);
+    require(_addressBrandIdMapping[brandAddress] == 0, "brand already registered");
+    uint256 brandID = ++_brandIDNonce << 128;
+    _addressBrandIdMapping[brandAddress] = brandID;
+    emit BrandRegistered(brandAddress, brandID);
   }
 
-  function mint(address customerAddress, string memory uri) public {
-      require(_brandAddressIdMapping[msg.sender] > 0, "Only registered brand can mint token");
-      uint256 brandId = _brandAddressIdMapping[msg.sender];
-      uint256 tokenId = _getNextTokenID();
-      _accountTokenMapping[customerAddress][brandId] = tokenId;
-      _tokenLogMapping[tokenId].push(uri);
-      _tokenBrandMapping[tokenId] = brandId;
-      emit TokenMint(customerAddress, tokenId);
-      _mint(customerAddress, brandId, 1, bytes(uri));
-      _incrementTokenId();
+  function mint(address customerAddress, string memory cid) public {
+    require(_addressBrandIdMapping[msg.sender] > 0, "Only registered brand can mint token");
+    uint256 brandId = _addressBrandIdMapping[msg.sender];
+    uint256 tokenIndex = ++_tokenIndexNonce;
+
+    uint256 tokenId = brandId + tokenIndex;
+
+    Token memory token = Token(tokenId, customerAddress, cid, new string[](0));
+
+    _tokens[tokenId] = token;
+    _brandTokens[brandId].push(token);
+
+    _mint(customerAddress, brandId, 1, "");
+    _mint(customerAddress, tokenId, 1, bytes(cid));
   }
 
   function addLog(uint256 tokenId, string memory uri) public {
-      require(_brandAddressIdMapping[msg.sender] == _tokenBrandMapping[tokenId] && _brandAddressIdMapping[msg.sender] > 0, "Only token issued brand can add log");
+    require(brandIdOf(msg.sender) == brandIdOf(tokenId), "Only token owner can add log");
+    _tokens[tokenId].logCIDs.push(uri);
+  }
 
-      _tokenLogMapping[tokenId].push(uri);
+  function brandIdOf(uint256 tokenId) public view virtual returns (uint256) {
+    return tokenId & BRAND_MASK;
   }
-  
-  function brandIdOfAddress(address account) public view virtual returns (uint256) {
-      return _brandAddressIdMapping[account];
-  }
-  
-  function tokenOf(address account, uint256 brandId) public view virtual returns (uint256) {
-      return _accountTokenMapping[account][brandId];
+
+  function brandIdOf(address account) public view virtual returns (uint256) {
+    return _addressBrandIdMapping[account];
   }
 
   function logsOf(uint256 tokenId) public view virtual returns (string[] memory) {
-      return _tokenLogMapping[tokenId];
+    return _tokens[tokenId].logCIDs;
   }
 
-  function brandIdOfToken(uint256 tokenId) public view virtual returns (uint256) {
-      return _tokenBrandMapping[tokenId];
+  function uri(uint256 tokenId) public view virtual override returns (string memory) {
+    return _tokens[tokenId].metadataCID;
   }
 
-    function _getNextBrandID() private view returns (uint256) {
-        return _currentBrandID + 1;
-    }
-
-	function _incrementBrandId() private {
-        _currentBrandID++;
-	}
-
-    function _getNextTokenID() private view returns (uint256) {
-        return _currentTokenID + 1;
-    }
-
-	function _incrementTokenId() private {
-        _currentTokenID++;
-	}
+  function tokenIssuedBy(uint256 brandId) public view virtual returns (Token[] memory) {
+    return _brandTokens[brandId];
+  }
 }
+
+// first brandId: 340282366920938463463374607431768211456
+// firs tokenId: 340282366920938463463374607431768211457
