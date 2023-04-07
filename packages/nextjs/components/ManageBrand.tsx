@@ -4,17 +4,12 @@ import { Abi } from "abitype";
 import { BigNumber } from "ethers";
 import { useContract, useProvider } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import { TrueToken } from "~~/types/truetoken";
+import getTokenFromContractResponse from "~~/utils/getTokenFromContractResponse";
 import { notification } from "~~/utils/scaffold-eth";
 
 type Props = {
   brandId: string;
-};
-
-type TrueToken = {
-  id: string;
-  owner: string;
-  uri: string;
-  logs: string[];
 };
 
 const ManageBrand = ({ brandId }: Props) => {
@@ -47,14 +42,7 @@ const ManageBrand = ({ brandId }: Props) => {
 
   useEffect(() => {
     if (rawTokens) {
-      setTokens(
-        rawTokens.map((tok: any) => ({
-          id: tok[0]._hex,
-          owner: tok[1],
-          uri: tok[2],
-          logs: [],
-        })),
-      );
+      setTokens(getTokenFromContractResponse(rawTokens));
     }
   }, [rawTokens]);
 

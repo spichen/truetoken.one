@@ -19,6 +19,7 @@ contract TrueToken is ERC1155 {
   mapping(address => uint256) private _addressBrandIdMapping;
   mapping(uint256 => Token) private _tokens;
   mapping(uint256 => Token[]) private _brandTokens;
+  mapping(address => Token[]) private _ownerTokens;
 
   event BrandRegistered(address indexed brandAddress, uint256 indexed brandId);
   event TokenMint(address indexed walletAddress, uint256 indexed tokenId);
@@ -43,6 +44,7 @@ contract TrueToken is ERC1155 {
 
     _tokens[tokenId] = token;
     _brandTokens[brandId].push(token);
+    _ownerTokens[customerAddress].push(token);
 
     _mint(customerAddress, brandId, 1, "");
     _mint(customerAddress, tokenId, 1, bytes(cid));
@@ -51,6 +53,13 @@ contract TrueToken is ERC1155 {
   function addLog(uint256 tokenId, string memory uri) public {
     require(brandIdOf(msg.sender) == brandIdOf(tokenId), "Only token owner can add log");
     _tokens[tokenId].logCIDs.push(uri);
+  }
+
+  function safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes memory _data) public virtual override {
+    super.safeTransferFrom(_from, _to, _id, _value, _data);
+    _tokens[_id].owner = _to;
+    _ownerTokens[_to].push(_tokens[_id]);
+    _ownerTokens[_from].pop();
   }
 
   function brandIdOf(uint256 tokenId) public view virtual returns (uint256) {
@@ -71,6 +80,10 @@ contract TrueToken is ERC1155 {
 
   function tokenIssuedBy(uint256 brandId) public view virtual returns (Token[] memory) {
     return _brandTokens[brandId];
+  }
+
+  function tokenOwnedBy(address account) public view virtual returns (Token[] memory) {
+    return _ownerTokens[account];
   }
 }
 
