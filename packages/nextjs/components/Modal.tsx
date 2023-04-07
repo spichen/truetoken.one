@@ -42,16 +42,20 @@ export default function Modal({
   );
 }
 
-const ModalAction = ({ actions }: { actions: { title: string; onClick: () => void }[] }) => {
+const ModalAction = ({
+  actions,
+}: {
+  actions: { title: string; type?: "button" | "submit" | "reset"; onClick?: () => void }[];
+}) => {
   return (
     <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
       {actions.map(action => {
         return (
           <button
             key={action.title}
-            className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-            type="button"
-            onClick={() => action.onClick()}
+            className="btn btn-primary"
+            type={action?.type || "button"}
+            onClick={() => action.onClick?.()}
           >
             {action.title}
           </button>

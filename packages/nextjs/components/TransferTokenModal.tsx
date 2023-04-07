@@ -35,6 +35,10 @@ const TransferTokenModal = ({ open, onRequestClose, tokenId }: Props) => {
       <Modal.Action
         actions={[
           {
+            title: "Close",
+            onClick: onRequestClose,
+          },
+          {
             title: "Transfer",
             onClick: async () => {
               await writeAsync();
