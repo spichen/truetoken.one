@@ -13,6 +13,8 @@ type MintTokenForm = {
   description: string;
   model: string;
   serial_number: string;
+  purchase_date: string;
+  warranty_expiry: string;
 };
 
 type Props = {
@@ -42,6 +44,8 @@ const MintToken = ({ open, onRequestClose }: Props) => {
         properties: {
           model: data.model,
           serial_number: data.serial_number,
+          purchase_date: data.purchase_date,
+          warranty_expiry: data.warranty_expiry,
         },
       }),
     ]);
@@ -89,7 +93,7 @@ const MintToken = ({ open, onRequestClose }: Props) => {
                 {...register("name")}
                 type="text"
                 autoComplete="text"
-                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
                 placeholder="Product Name"
               />
             </div>
@@ -99,10 +103,10 @@ const MintToken = ({ open, onRequestClose }: Props) => {
                 <span className="text-xl text-red-500 dark:text-red-400">*</span>
               </label>
               <input
-                {...register("description", { required: true, maxLength: 20 })}
+                {...register("description", { required: true, maxLength: 500 })}
                 type="text"
                 autoComplete="text"
-                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
                 placeholder="Description"
               />
             </div>
@@ -116,7 +120,7 @@ const MintToken = ({ open, onRequestClose }: Props) => {
               {...register("image")}
               type="text"
               autoComplete="text"
-              className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+              className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
               placeholder="Image URL"
             />
           </div>
@@ -131,7 +135,7 @@ const MintToken = ({ open, onRequestClose }: Props) => {
                 {...register("model", { required: true, maxLength: 20 })}
                 type="text"
                 autoComplete="text"
-                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
                 placeholder="Model"
               />
             </div>
@@ -142,11 +146,41 @@ const MintToken = ({ open, onRequestClose }: Props) => {
                 <span className="text-xl text-red-500 dark:text-red-400">*</span>
               </label>
               <input
-                {...register("serial_number", { required: true, maxLength: 20 })}
+                {...register("serial_number", { required: true, maxLength: 500 })}
                 type="text"
                 autoComplete="text"
-                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
                 placeholder="Serial Number"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Purchase Date
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+
+              <input
+                {...register("purchase_date", { required: true, maxLength: 20 })}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Purchase Date"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Warranty Expiry
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+              <input
+                {...register("warranty_expiry", { required: true, maxLength: 20 })}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-200 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Warranty Expiry"
               />
             </div>
           </div>
