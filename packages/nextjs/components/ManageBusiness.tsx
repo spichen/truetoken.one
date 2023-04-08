@@ -51,6 +51,7 @@ const ManageBusiness = ({ brandId }: Props) => {
   });
 
   const businessName = business && (business as unknown as any[])[2];
+  const businessId = business && (business as unknown as any[])[0];
 
   useEffect(() => {
     if (rawTokens) {
@@ -71,7 +72,7 @@ const ManageBusiness = ({ brandId }: Props) => {
           <div className="flex justify-between items-center">
             <div>
               <div className="text-sm font-semibold uppercase tracking-widest text-primary dark:text-secondaryLight">
-                {businessName}
+                {businessName} - {businessId?.toString()}
               </div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">Manage Tokens</h3>
             </div>
