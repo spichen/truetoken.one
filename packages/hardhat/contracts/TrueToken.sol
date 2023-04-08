@@ -50,7 +50,7 @@ contract TrueToken is ERC1155 {
 
     uint256 tokenId = businessId + tokenIndex;
 
-    Token memory token = Token(tokenId, customerAddress, cid, new string[](0));
+    Token memory token = Token(tokenId, customerAddress, string.concat("ipfs://", cid), new string[](0));
 
     _tokens[tokenId] = token;
     _businessTokens[businessId].push(token);
@@ -100,6 +100,3 @@ contract TrueToken is ERC1155 {
     return _ownerTokens[account];
   }
 }
-
-// first businessId: 340282366920938463463374607431768211456
-// firs tokenId: 340282366920938463463374607431768211457

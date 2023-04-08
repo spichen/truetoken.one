@@ -9,6 +9,7 @@ import config from "~~/truetoken.config.js";
 type MintTokenForm = {
   to: string;
   name: string;
+  image: string;
   description: string;
   model: string;
   serial_number: string;
@@ -30,31 +31,26 @@ const MintToken = ({ open, onRequestClose }: Props) => {
     args: [customerWallet, metadataURI],
   });
 
-  async function getExampleImage() {
-    const imageOriginUrl =
-      "https://fastly.picsum.photos/id/249/200/300.jpg?hmac=HXJz3fKmXquFNHrfyd1yRHUYx9SheA_j2gbbya_4mlA";
-    const r = await fetch(imageOriginUrl);
-    if (!r.ok) {
-      throw new Error(`error fetching image: ${r.status}`);
-    }
-    return r.blob();
-  }
   const client = new NFTStorage({ token: config.nftStorageApiKey });
 
   const onSubmit: SubmitHandler<MintTokenForm> = async data => {
-    const image = await getExampleImage();
+    const metadataBlob = new Blob([
+      JSON.stringify({
+        name: data.name,
+        description: data.description,
+        image: data.image,
+        properties: {
+          model: data.model,
+          serial_number: data.serial_number,
+        },
+      }),
+    ]);
 
-    const metadata = await client.store({
-      name: data.name,
-      description: data.description,
-      image,
-      properties: {
-        model: data.model,
-        serial_number: data.serial_number,
-      },
-    });
+    const { car } = await NFTStorage.encodeBlob(metadataBlob);
 
-    setMetadataURI(metadata.url);
+    const cid = await client.storeCar(car);
+
+    setMetadataURI(cid);
   };
 
   useEffect(() => {
@@ -111,7 +107,19 @@ const MintToken = ({ open, onRequestClose }: Props) => {
               />
             </div>
           </div>
-
+          <div>
+            <label htmlFor="product-image" className="mb-2 block text-gray-600 dark:text-gray-300">
+              Image URL
+              <span className="text-xl text-red-500 dark:text-red-400">*</span>
+            </label>
+            <input
+              {...register("image")}
+              type="text"
+              autoComplete="text"
+              className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+              placeholder="Image URL"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
