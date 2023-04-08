@@ -39,14 +39,7 @@ export const FaucetButton = () => {
 
   return (
     <>
-      <div
-        className={
-          balance
-            ? ""
-            : "tooltip tooltip-bottom tooltip-secondary tooltip-open font-bold before:left-auto before:transform-none before:content-[attr(data-tip)] before:right-0"
-        }
-        data-tip="Grab funds from faucet"
-      >
+      <div className="flex items-center justify-center">
         <button
           data-tooltip-target="tooltip-default"
           className={`group relative hidden h-9 w-9 rounded-full before:absolute before:inset-0 before:rounded-full before:border before:border-gray-200 before:bg-gray-50 before:bg-gradient-to-b before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800 lg:flex ${
@@ -57,14 +50,7 @@ export const FaucetButton = () => {
         >
           {!loading && <BanknotesIcon className="h-4 w-4 z-10 text-white m-auto" />}
         </button>
-      </div>
-      <div
-        id="tooltip-default"
-        role="tooltip"
-        className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-      >
-        Tooltip content
-        <div className="tooltip-arrow" data-popper-arrow></div>
+        {!balance && <div className="ml-3 text-white text-xs">Grab funds from faucet</div>}
       </div>
     </>
   );

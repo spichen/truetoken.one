@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowUpTrayIcon } from "@heroicons/react/24/outline";
-import config from "~~/truetoken.config";
 import { TrueToken } from "~~/types/truetoken";
 
 type TokenMetadata = {
@@ -36,8 +35,6 @@ const TokenCard = ({
       setMetadata(json);
     })();
   }, [token]);
-
-  const logsFeatureEnabled = config.featureToggle.serviceLogs;
 
   return (
     <>
@@ -78,25 +75,23 @@ const TokenCard = ({
                 <ArrowUpTrayIcon className="ml-2 h-4 w-4 dark:text-gray-300 z-10" />
               </button>
             </div>
-            {logsFeatureEnabled && (
-              <button
-                onClick={() => onServiceLogsClick(token.id)}
-                className="group relative mx-auto flex h-12 w-12 items-center justify-center before:absolute before:inset-0 before:rounded-full before:border before:border-gray-200 before:bg-gray-50 before:bg-gradient-to-b before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800"
+            <button
+              onClick={() => onServiceLogsClick(token.id)}
+              className="group relative mx-auto flex h-12 w-12 items-center justify-center before:absolute before:inset-0 before:rounded-full before:border before:border-gray-200 before:bg-gray-50 before:bg-gradient-to-b before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="-transtransition-transform relative h-5 w-5 text-gray-600 duration-300 group-hover:translate-x-1 dark:text-white"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="-transtransition-transform relative h-5 w-5 text-gray-600 duration-300 group-hover:translate-x-1 dark:text-white"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-            )}
+                <path
+                  fillRule="evenodd"
+                  d="M16.28 11.47a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 011.06-1.06l7.5 7.5z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

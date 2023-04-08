@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import AddServiceLogModal from "./AddServiceLogModal";
+import AddHistoryEntryModal from "./AddHistoryEntryModal";
+import HistoryModal from "./HistoryModal";
 import MintToken from "./MintToken";
-import ServiceLogsModal from "./ServiceLogsModal";
 import { Abi } from "abitype";
 import { BigNumber } from "ethers";
 import { useContract, useProvider } from "wagmi";
 import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
-import config from "~~/truetoken.config";
 import { TrueToken } from "~~/types/truetoken";
 import getTokenFromContractResponse from "~~/utils/getTokenFromContractResponse";
 import { notification } from "~~/utils/scaffold-eth";
@@ -57,8 +56,6 @@ const ManageBrand = ({ brandId }: Props) => {
     }
   }, [minted]);
 
-  const logsFeatureEnabled = config.featureToggle.serviceLogs;
-
   return (
     <>
       <section id="manage-business" className="pt-32">
@@ -88,10 +85,12 @@ const ManageBrand = ({ brandId }: Props) => {
                     <th className="bg-gray-50 py-3 pl-6 text-left text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-white">
                       Token ID
                     </th>
-                    <th className="bg-gray-50 py-3 pl-6 text-left text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-white">
+                    <th className="bg-gray-50 py-3 pl-6 text-left text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-white w-36">
                       Details
                     </th>
-                    {logsFeatureEnabled && <th>Logs</th>}
+                    <th className="bg-gray-50 py-3 pl-6 text-left text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-white w-72">
+                      History
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 border-x border-b border-gray-200 dark:divide-gray-700 dark:border-gray-700 [&>*]:divide-x [&>*]:divide-gray-200 [&>*]:dark:divide-gray-700">
@@ -105,32 +104,41 @@ const ManageBrand = ({ brandId }: Props) => {
                           {tok.id}
                         </td>
                         <td className="py-5 px-6 text-left text-sm font-normal text-gray-600 dark:text-gray-400">
-                          <a href={tok.uri} className="btn btn-ghost btn-xs">
-                            Metadata
+                          <a
+                            href={tok.uri}
+                            className="relative ml-auto flex h-6 w-full items-center justify-center before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-primaryLight sm:px-4 lg:before:border lg:before:border-gray-200 lg:before:bg-gray-100 lg:dark:before:bg-gray-800"
+                          >
+                            <span className="relative text-xs font-semibold text-white dark:text-gray-900 lg:text-primary lg:dark:text-white">
+                              Metadata
+                            </span>
                           </a>
                         </td>
-                        {logsFeatureEnabled && (
-                          <td>
+                        <td className="py-5 px-6 text-left text-sm font-normal text-gray-600 dark:text-gray-400">
+                          <div className="grid grid-cols-2 gap-4">
                             <button
                               onClick={() => {
                                 setSelectedToken(tok.id);
                                 setServiceLogIsOpen(true);
                               }}
-                              className="btn btn-ghost btn-xs"
+                              className="relative ml-auto flex h-6 w-full items-center justify-center before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-primaryLight sm:px-4 lg:before:border lg:before:border-gray-200 lg:before:bg-gray-100 lg:dark:before:bg-gray-800"
                             >
-                              Logs
+                              <span className="relative text-xs font-semibold text-white dark:text-gray-900 lg:text-primary lg:dark:text-white">
+                                View History{" "}
+                              </span>
                             </button>
                             <button
                               onClick={() => {
                                 setSelectedToken(tok.id);
                                 setAddServiceLogIsOpen(true);
                               }}
-                              className="btn btn-ghost btn-xs"
+                              className="relative ml-auto flex h-6 w-full items-center justify-center before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-primaryLight sm:px-4 lg:before:border lg:before:border-gray-200 lg:before:bg-gray-100 lg:dark:before:bg-gray-800"
                             >
-                              Add Log
+                              <span className="relative text-xs font-semibold text-white dark:text-gray-900 lg:text-primary lg:dark:text-white">
+                                Add New
+                              </span>
                             </button>
-                          </td>
-                        )}
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -147,24 +155,22 @@ const ManageBrand = ({ brandId }: Props) => {
             }}
           />
         )}
-        {config.featureToggle.serviceLogs && (
-          <>
-            <ServiceLogsModal
-              tokenId={token}
-              open={modalServiceLogIsOpen}
-              onRequestClose={() => {
-                setServiceLogIsOpen(false);
-              }}
-            />
-            <AddServiceLogModal
-              tokenId={token}
-              open={modalAddServiceLogIsOpen}
-              onRequestClose={() => {
-                setAddServiceLogIsOpen(false);
-              }}
-            />
-          </>
-        )}
+        <>
+          <HistoryModal
+            tokenId={token}
+            open={modalServiceLogIsOpen}
+            onRequestClose={() => {
+              setServiceLogIsOpen(false);
+            }}
+          />
+          <AddHistoryEntryModal
+            tokenId={token}
+            open={modalAddServiceLogIsOpen}
+            onRequestClose={() => {
+              setAddServiceLogIsOpen(false);
+            }}
+          />
+        </>
       </section>
     </>
   );

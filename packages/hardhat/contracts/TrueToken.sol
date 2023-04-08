@@ -9,7 +9,7 @@ contract TrueToken is ERC1155 {
     uint256 id;
     address owner;
     string metadataCID;
-    string[] logCIDs;
+    string[] historyCIDs;
   }
 
   struct Business {
@@ -60,9 +60,9 @@ contract TrueToken is ERC1155 {
     _mint(customerAddress, tokenId, 1, bytes(cid));
   }
 
-  function addLog(uint256 tokenId, string memory uri) public {
-    require(businessIdOf(msg.sender) == businessIdOf(tokenId), "Only token owner can add log");
-    _tokens[tokenId].logCIDs.push(uri);
+  function addHistoryEntry(uint256 tokenId, string memory uri) public {
+    require(businessIdOf(msg.sender) == businessIdOf(tokenId), "Only token owner can add history");
+    _tokens[tokenId].historyCIDs.push(uri);
   }
 
   function safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes memory _data) public virtual override {
@@ -84,8 +84,8 @@ contract TrueToken is ERC1155 {
     return _businessMapping[businessId];
   }
 
-  function logsOf(uint256 tokenId) public view virtual returns (string[] memory) {
-    return _tokens[tokenId].logCIDs;
+  function historyOf(uint256 tokenId) public view virtual returns (string[] memory) {
+    return _tokens[tokenId].historyCIDs;
   }
 
   function uri(uint256 tokenId) public view virtual override returns (string memory) {

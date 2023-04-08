@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import ServiceLogsModal from "./ServiceLogsModal";
+import ServiceLogsModal from "./HistoryModal";
 import TokenCard from "./TokenCard";
 import TransferTokenModal from "./TransferTokenModal";
 import { useAccount } from "wagmi";

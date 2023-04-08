@@ -4,80 +4,74 @@ import { TrueToken } from "../typechain-types";
 
 describe("TrueToken", function () {
   let trueToken: TrueToken;
-  const brandMetadataUri = "https://truetoken.io/brandmeta/{id}.json";
+  const businessMetadataUri = "https://truetoken.io/businessmeta/{id}.json";
 
   beforeEach(async () => {
     const trueTokenFactory = await ethers.getContractFactory("TrueToken");
-    trueToken = (await trueTokenFactory.deploy(brandMetadataUri)) as TrueToken;
+    trueToken = (await trueTokenFactory.deploy(businessMetadataUri)) as TrueToken;
     await trueToken.deployed();
   });
 
   describe("Deployment", () => {
     it("Should return uri provided during deployment", async function () {
-      expect(await trueToken.uri(1)).to.equal(brandMetadataUri);
+      expect(await trueToken.uri(1)).to.equal(businessMetadataUri);
     });
   });
 
-  describe("Register Brand", () => {
-    it("Should register brand", async function () {
-      const [brand] = await ethers.getSigners();
+  describe("Register Business", () => {
+    it("Should register business", async function () {
+      const [business] = await ethers.getSigners();
 
-      const tx = await trueToken.registerBrand(brand.address);
+      const tx = await trueToken.registerBusiness(business.address, "Business Name");
       await tx.wait();
 
-      expect(await trueToken.brandIdOfAddress(brand.address)).to.equal(1);
+      expect(await trueToken.businessIdOf(business.address)).to.equal(1);
     });
-    it("Should emit event when registering brand", async function () {
-      const [brand] = await ethers.getSigners();
+    it("Should emit event when registering business", async function () {
+      const [business] = await ethers.getSigners();
 
-      await expect(trueToken.registerBrand(brand.address))
-        .to.emit(trueToken, "BrandRegistered")
-        .withArgs(brand.address, 1);
+      await expect(trueToken.registerBusiness(business.address, "Business Name"))
+        .to.emit(trueToken, "BusinessRegistered")
+        .withArgs(business.address, 1);
     });
   });
 
   describe("Mint Token", () => {
-    it("Should reject if message is sent from non brand address", async function () {
-      const [nonRegisteredBrand] = await ethers.getSigners();
+    it("Should reject if message is sent from non business address", async function () {
+      const [nonRegisteredBusiness] = await ethers.getSigners();
       const wallet = ethers.Wallet.createRandom();
-      await expect(trueToken.connect(nonRegisteredBrand).mint(wallet.address, "23")).to.be.revertedWith(
-        "Only registered brand can mint token",
+      await expect(trueToken.connect(nonRegisteredBusiness).mint(wallet.address, "23")).to.be.revertedWith(
+        "Only registered business can mint token",
       );
     });
 
     it("Should mint token to customer", async function () {
-      const [brand] = await ethers.getSigners();
+      const [business] = await ethers.getSigners();
       const wallet = ethers.Wallet.createRandom();
-      const tx = await trueToken.registerBrand(brand.address);
+      const tx = await trueToken.registerBusiness(business.address, "Business Name");
       await tx.wait();
-      await expect(trueToken.connect(brand).mint(wallet.address, "/asset/metadata"))
+      await expect(trueToken.connect(business).mint(wallet.address, "/asset/metadata"))
         .to.emit(trueToken, "TokenMint")
         .withArgs(wallet.address, 1);
 
       expect(await trueToken.balanceOf(wallet.address, 1)).to.equal(1);
       expect(await trueToken.tokenOf(wallet.address, 1)).to.equal(1);
       expect((await trueToken.logsOf(1))[0]).to.equal("/asset/metadata");
-      expect(await trueToken.brandIdOfToken(1)).to.equal(1);
+      expect(await trueToken.businessIdOfToken(1)).to.equal(1);
     });
   });
 
   describe("Add Log", () => {
-    it("Should reject if sender is not token issued brand", async function () {
-      await expect(trueToken.addLog(1, "23")).to.be.revertedWith("Only token issued brand can add log");
-    });
-
-    it.only("Should asdasd if sender is not token issued brand", async function () {
-      const res = await trueToken.sala();
-
-      console.log(res.toNumber());
+    it("Should reject if sender is not token issued business", async function () {
+      await expect(trueToken.addLog(1, "23")).to.be.revertedWith("Only token issued business can add log");
     });
 
     it("Should add log to token", async function () {
-      const [brand] = await ethers.getSigners();
+      const [business] = await ethers.getSigners();
       const wallet = ethers.Wallet.createRandom();
 
-      await (await trueToken.registerBrand(brand.address)).wait();
-      await trueToken.connect(brand).mint(wallet.address, "/asset/metadata");
+      await (await trueToken.registerBusiness(business.address, "Business Name")).wait();
+      await trueToken.connect(business).mint(wallet.address, "/asset/metadata");
 
       await trueToken.addLog(1, "log-hash");
 

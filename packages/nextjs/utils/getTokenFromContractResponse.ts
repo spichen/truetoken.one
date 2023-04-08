@@ -6,7 +6,7 @@ const getTokenFromContractResponse: (
     id: BigNumber;
     owner: string;
     metadataCID: string;
-    logCIDs: readonly string[];
+    historyCIDs: readonly string[];
   }[],
 ) => TrueToken[] = rawTokens => {
   return rawTokens.map((tok: any) => ({
