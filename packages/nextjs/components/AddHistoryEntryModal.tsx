@@ -16,6 +16,7 @@ const AddHistoryEntryModal = ({ open, onRequestClose, tokenId }: Props) => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [cid, setCid] = useState<string>("");
+  const [contractCalled, setContractCalled] = useState<boolean>(false);
 
   const { writeAsync } = useScaffoldContractWrite({
     contractName: "TrueToken",
@@ -33,16 +34,16 @@ const AddHistoryEntryModal = ({ open, onRequestClose, tokenId }: Props) => {
       }),
     ]);
     const cid = await client.storeBlob(blob);
-    console.log("I GOT THE CID -> ", cid);
     setCid(cid);
   };
 
   useEffect(() => {
-    if (cid) {
+    if (cid && !contractCalled) {
       writeAsync();
+      setContractCalled(true);
       onRequestClose();
     }
-  }, [cid]);
+  }, [cid, contractCalled, onRequestClose, writeAsync]);
 
   return (
     <Modal title="Add History Entry" open={open} onRequestClose={onRequestClose}>

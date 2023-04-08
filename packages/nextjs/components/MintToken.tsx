@@ -26,6 +26,7 @@ const MintToken = ({ open, onRequestClose }: Props) => {
   const [customerWallet, setCustomerWallet] = useState<string>("");
   const { register, handleSubmit, reset } = useForm<MintTokenForm>();
   const [metadataURI, setMetadataURI] = useState<string | undefined>(undefined);
+  const [contractCalled, setContractCalled] = useState<boolean>(false);
 
   const { writeAsync, isSuccess, isLoading } = useScaffoldContractWrite({
     contractName: "TrueToken",
@@ -58,18 +59,19 @@ const MintToken = ({ open, onRequestClose }: Props) => {
   };
 
   useEffect(() => {
-    if (metadataURI) {
+    if (metadataURI && !contractCalled) {
       writeAsync();
+      setContractCalled(true);
       setCustomerWallet("");
       reset();
     }
-  }, [metadataURI]);
+  }, [metadataURI, contractCalled, writeAsync, setContractCalled, setCustomerWallet, reset]);
 
   useEffect(() => {
     if (isSuccess) {
       onRequestClose();
     }
-  }, [isSuccess]);
+  }, [isSuccess, onRequestClose]);
 
   return (
     <Modal title="Mint Token" open={open} onRequestClose={onRequestClose}>

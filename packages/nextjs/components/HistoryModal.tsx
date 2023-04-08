@@ -25,7 +25,6 @@ const HistoryModal = ({ open, onRequestClose, tokenId }: Props) => {
         logCids.map(cid => fetch(`https://ipfs.io/ipfs/${cid}#x-ipfs-companion-no-redirect`)),
       );
       const json = await Promise.all(res.filter(re => re.ok).map(re => re.json()));
-      console.log("json", json);
       setLogs(json);
     })();
   }, [logCids]);

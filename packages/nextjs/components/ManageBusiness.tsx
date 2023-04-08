@@ -5,10 +5,9 @@ import MintToken from "./MintToken";
 import { Abi } from "abitype";
 import { BigNumber } from "ethers";
 import { useContract, useProvider } from "wagmi";
-import { useDeployedContractInfo, useScaffoldContractRead, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
+import { useDeployedContractInfo, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 import { TrueToken } from "~~/types/truetoken";
 import getTokenFromContractResponse from "~~/utils/getTokenFromContractResponse";
-import { notification } from "~~/utils/scaffold-eth";
 
 type Props = {
   brandId: string;
@@ -18,17 +17,9 @@ const ManageBusiness = ({ brandId }: Props) => {
   const [modalMintIsOpen, setMintIsOpen] = useState(false);
   const [modalServiceLogIsOpen, setServiceLogIsOpen] = useState(false);
   const [modalAddServiceLogIsOpen, setAddServiceLogIsOpen] = useState(false);
-  const [minted, setMinted] = useState(false);
   const [token, setSelectedToken] = useState("");
   const [tokens, setTokens] = useState<TrueToken[]>([]);
 
-  useScaffoldEventSubscriber({
-    contractName: "TrueToken",
-    eventName: "TokenMint",
-    listener: (...[walletAddress, tokenId]) => {
-      if (walletAddress && tokenId) setMinted(true);
-    },
-  });
   const provider = useProvider();
   const { data: deployedContractData } = useDeployedContractInfo("TrueToken");
 
@@ -58,12 +49,6 @@ const ManageBusiness = ({ brandId }: Props) => {
       setTokens(getTokenFromContractResponse(rawTokens));
     }
   }, [rawTokens]);
-
-  useEffect(() => {
-    if (minted) {
-      notification.success(<div>Token Minted</div>);
-    }
-  }, [minted]);
 
   return (
     <>

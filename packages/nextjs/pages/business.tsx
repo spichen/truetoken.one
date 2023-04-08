@@ -16,7 +16,7 @@ const Brand: NextPage = () => {
 
   const { data, isLoading } = useScaffoldContractRead({
     contractName: "TrueToken",
-    functionName: "businessIdOf",
+    functionName: "businessIdOfAccount",
     args: [account.address],
   });
 

@@ -29,7 +29,6 @@ contract TrueToken is ERC1155 {
   mapping(uint256 => Business) private _businessMapping;
 
   event BusinessRegistered(address indexed businessAddress, uint256 indexed businessId);
-  event TokenMint(address indexed walletAddress, uint256 indexed tokenId);
 
   constructor(string memory _uri) ERC1155(_uri) {}
 
@@ -61,7 +60,7 @@ contract TrueToken is ERC1155 {
   }
 
   function addHistoryEntry(uint256 tokenId, string memory uri) public {
-    require(businessIdOf(msg.sender) == businessIdOf(tokenId), "Only token owner can add history");
+    require(businessIdOfAccount(msg.sender) !=0 && businessIdOfAccount(msg.sender) == businessIdOfToken(tokenId), "Only token owner can add history");
     _tokens[tokenId].historyCIDs.push(uri);
   }
 
@@ -72,11 +71,11 @@ contract TrueToken is ERC1155 {
     _ownerTokens[_from].pop();
   }
 
-  function businessIdOf(uint256 tokenId) public view virtual returns (uint256) {
+  function businessIdOfToken(uint256 tokenId) public view virtual returns (uint256) {
     return tokenId & BRAND_MASK;
   }
 
-  function businessIdOf(address account) public view virtual returns (uint256) {
+  function businessIdOfAccount(address account) public view virtual returns (uint256) {
     return _addressBusinessIdMapping[account];
   }
 

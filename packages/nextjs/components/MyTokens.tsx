@@ -21,8 +21,6 @@ const MyTokens = () => {
 
   const tokens = rawTokens ? getTokenFromContractResponse(rawTokens) : [];
 
-  console.log("tokens", tokens);
-
   if (isLoading) {
     return (
       <div className="hero min-h-screen bg-base-200">
