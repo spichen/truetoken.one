@@ -29,15 +29,17 @@ const TransferTokenModal = ({ open, onRequestClose, tokenId }: Props) => {
 
   return (
     <Modal title="Transfer Token" open={open} onRequestClose={onRequestClose}>
-      <div className="relative p-6 flex-auto">
-        <AddressInput value={toAddress} onChange={setToAddress} />
+      <div className="mt-8 mb-6 space-y-4">
+        <div>
+          <label htmlFor="product-name" className="mb-2 block text-gray-600 dark:text-gray-300">
+            To Wallet
+            <span className="text-xl text-red-500 dark:text-red-400">*</span>
+          </label>
+          <AddressInput value={toAddress} onChange={setToAddress} />
+        </div>
       </div>
       <Modal.Action
         actions={[
-          {
-            title: "Close",
-            onClick: onRequestClose,
-          },
           {
             title: "Transfer",
             onClick: async () => {
