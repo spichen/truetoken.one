@@ -33,10 +33,12 @@ export const InputBase = <T extends { toString: () => string } = string>({
   );
 
   return (
-    <div className={`flex border-2 border-base-300 bg-base-200 rounded-full text-accent ${modifier}`}>
+    <div className={`flex ${modifier}`}>
       {prefix}
       <input
-        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
+        className={`peer block w-full ${suffix ? "rounded-r-none" : ""} ${
+          prefix ? "rounded-l-none" : ""
+        } rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700`}
         placeholder={placeholder}
         name={name}
         value={value?.toString()}

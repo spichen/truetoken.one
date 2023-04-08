@@ -12,8 +12,6 @@ type MintTokenForm = {
   description: string;
   model: string;
   serial_number: string;
-  purchase_date: string;
-  warranty_expiry_date: string;
 };
 
 type Props = {
@@ -26,7 +24,7 @@ const MintToken = ({ open, onRequestClose }: Props) => {
   const { register, handleSubmit, reset } = useForm<MintTokenForm>();
   const [metadataURI, setMetadataURI] = useState<string | undefined>(undefined);
 
-  const { writeAsync } = useScaffoldContractWrite({
+  const { writeAsync, isSuccess, isLoading } = useScaffoldContractWrite({
     contractName: "TrueToken",
     functionName: "mint",
     args: [customerWallet, metadataURI],
@@ -53,8 +51,6 @@ const MintToken = ({ open, onRequestClose }: Props) => {
       properties: {
         model: data.model,
         serial_number: data.serial_number,
-        purchase_date: data.purchase_date,
-        warranty_expiry_date: data.warranty_expiry_date,
       },
     });
 
@@ -69,147 +65,89 @@ const MintToken = ({ open, onRequestClose }: Props) => {
     }
   }, [metadataURI]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      onRequestClose();
+    }
+  }, [isSuccess]);
+
   return (
     <Modal title="Mint Token" open={open} onRequestClose={onRequestClose}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="relative p-6 flex-auto">
-          <div className="space-y-12">
-            <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <div className="col-span-full">
-                <div>
-                  <label htmlFor="product-name" className="block text-sm font-medium leading-6 text-gray-900">
-                    Customer Wallet
-                  </label>
-                  <AddressInput value={customerWallet} onChange={setCustomerWallet} />
-                </div>
-              </div>
-              <div className="col-span-full ">
-                <div>
-                  <label htmlFor="product-name" className="block text-sm font-medium leading-6 text-gray-900">
-                    Product Name
-                  </label>
-                  <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                    <input
-                      {...register("name")}
-                      type="text"
-                      autoComplete="text"
-                      className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                      placeholder="Product Name"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="col-span-full">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
-                      Description
-                    </label>
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                      <input
-                        {...register("description", { required: true, maxLength: 20 })}
-                        type="text"
-                        autoComplete="text"
-                        required
-                        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                        placeholder="Description"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className="sm:col-span-3">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label htmlFor="model" className="block text-sm font-medium leading-6 text-gray-900">
-                      Model
-                    </label>
+        <div className="mt-8 mb-6 space-y-4">
+          <div>
+            <label htmlFor="product-name" className="mb-2 block text-gray-600 dark:text-gray-300">
+              Customer Wallet
+              <span className="text-xl text-red-500 dark:text-red-400">*</span>
+            </label>
+            <AddressInput value={customerWallet} onChange={setCustomerWallet} />
+          </div>
 
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                      <input
-                        {...register("model", { required: true, maxLength: 20 })}
-                        type="text"
-                        autoComplete="text"
-                        required
-                        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                        placeholder="Model"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className="sm:col-span-3">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label htmlFor="serial_number" className="block text-sm font-medium leading-6 text-gray-900">
-                      Serial Number
-                    </label>
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                      <input
-                        {...register("serial_number", { required: true, maxLength: 20 })}
-                        type="text"
-                        autoComplete="text"
-                        required
-                        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                        placeholder="Serial Number"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className="sm:col-span-3">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label htmlFor="purchase_date" className="block text-sm font-medium leading-6 text-gray-900">
-                      Purchase Date
-                    </label>
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                      <input
-                        {...register("purchase_date", { required: true, maxLength: 20 })}
-                        type="text"
-                        autoComplete="text"
-                        required
-                        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                        placeholder="Purchase Date"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className="sm:col-span-3">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div>
-                    <label htmlFor="warranty_expiry_date" className="block text-sm font-medium leading-6 text-gray-900">
-                      Warranty Expiry Date
-                    </label>
-                    <div className="flex border-2 border-base-300 bg-base-200 rounded-full text-accent">
-                      <input
-                        {...register("warranty_expiry_date", { required: true, maxLength: 20 })}
-                        type="text"
-                        autoComplete="text"
-                        required
-                        className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400"
-                        placeholder="Warranty Expiry Date"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="product-name" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Product Name
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+              <input
+                {...register("name")}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Product Name"
+              />
+            </div>
+            <div>
+              <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Description
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+              <input
+                {...register("description", { required: true, maxLength: 20 })}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Description"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Model
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+
+              <input
+                {...register("model", { required: true, maxLength: 20 })}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Model"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="description" className="mb-2 block text-gray-600 dark:text-gray-300">
+                Serial Number
+                <span className="text-xl text-red-500 dark:text-red-400">*</span>
+              </label>
+              <input
+                {...register("serial_number", { required: true, maxLength: 20 })}
+                type="text"
+                autoComplete="text"
+                className="peer block w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-gray-600 transition-shadow duration-300 invalid:ring-2 invalid:ring-red-400 focus:ring-2 dark:border-gray-700"
+                placeholder="Serial Number"
+              />
             </div>
           </div>
         </div>
+
         <Modal.Action
           actions={[
             {
-              title: "Close",
-              onClick: () => {
-                setCustomerWallet("");
-                reset();
-                onRequestClose();
-              },
-            },
-            {
-              title: "Mint",
+              title: isLoading ? "Minting..." : "Mint",
               type: "submit",
             },
           ]}

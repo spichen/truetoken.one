@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useScaffoldContractWrite, useScaffoldEventSubscriber } from "./scaffold-eth";
 
-export const useRegisterBrand = (brandAddress: string) => {
-  const [brandId, setBrandId] = useState<string | undefined>(undefined);
+export const useRegisterBusiness = (businessAccount: string, businessName: string) => {
+  const [businessId, setBusinessId] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const { writeAsync, isError, error } = useScaffoldContractWrite({
     contractName: "TrueToken",
-    functionName: "registerBrand",
-    args: [brandAddress],
+    functionName: "registerBusiness",
+    args: [businessAccount, businessName],
   });
 
   useEffect(() => {
@@ -18,11 +18,11 @@ export const useRegisterBrand = (brandAddress: string) => {
 
   useScaffoldEventSubscriber({
     contractName: "TrueToken",
-    eventName: "BrandRegistered",
-    listener: (...[address, brandId]) => {
-      if (address === brandAddress) {
+    eventName: "BusinessRegistered",
+    listener: (...[address, businessId]) => {
+      if (address === businessAccount) {
         setIsLoading(false);
-        setBrandId(brandId._hex);
+        setBusinessId(businessId._hex);
       }
     },
     once: true,
@@ -33,7 +33,7 @@ export const useRegisterBrand = (brandAddress: string) => {
       setIsLoading(true);
       await writeAsync();
     },
-    brandId,
+    businessId,
     error,
     isError,
     isLoading,

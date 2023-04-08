@@ -68,7 +68,7 @@ const Home: NextPage = () => {
                 <div className="mt-12 hidden lg:block">
                   <span className="text-gray-700 dark:text-white">
                     Own a business?{" "}
-                    <Link href="/brand" className="text-primary underline dark:text-primaryLight">
+                    <Link href="/business" className="text-primary underline dark:text-primaryLight">
                       Register
                     </Link>{" "}
                     to issue NFTs! !

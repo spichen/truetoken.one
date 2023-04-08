@@ -12,46 +12,56 @@ contract TrueToken is ERC1155 {
     string[] logCIDs;
   }
 
+  struct Business {
+    uint256 id;
+    address owner;
+    string name;
+  }
+
   uint256 constant BRAND_MASK = uint256(type(uint128).max) << 128;
   uint256 constant TOKEN_INDEX_MASK = type(uint128).max;
-  uint256 private _brandIDNonce = 0;
+  uint256 private _businessIDNonce = 0;
   uint256 private _tokenIndexNonce = 0;
-  mapping(address => uint256) private _addressBrandIdMapping;
+  mapping(address => uint256) private _addressBusinessIdMapping;
   mapping(uint256 => Token) private _tokens;
-  mapping(uint256 => Token[]) private _brandTokens;
+  mapping(uint256 => Token[]) private _businessTokens;
   mapping(address => Token[]) private _ownerTokens;
+  mapping(uint256 => Business) private _businessMapping;
 
-  event BrandRegistered(address indexed brandAddress, uint256 indexed brandId);
+  event BusinessRegistered(address indexed businessAddress, uint256 indexed businessId);
   event TokenMint(address indexed walletAddress, uint256 indexed tokenId);
 
   constructor(string memory _uri) ERC1155(_uri) {}
 
-  function registerBrand(address brandAddress) public {
-    require(_addressBrandIdMapping[brandAddress] == 0, "brand already registered");
-    uint256 brandID = ++_brandIDNonce << 128;
-    _addressBrandIdMapping[brandAddress] = brandID;
-    emit BrandRegistered(brandAddress, brandID);
+  function registerBusiness(address businessAddress, string memory name) public {
+    require(_addressBusinessIdMapping[businessAddress] == 0, "business already registered");
+    uint256 businessID = ++_businessIDNonce << 128;
+    _addressBusinessIdMapping[businessAddress] = businessID;
+
+    Business memory business = Business(businessID, businessAddress, name);
+    _businessMapping[businessID] = business;
+    emit BusinessRegistered(businessAddress, businessID);
   }
 
   function mint(address customerAddress, string memory cid) public {
-    require(_addressBrandIdMapping[msg.sender] > 0, "Only registered brand can mint token");
-    uint256 brandId = _addressBrandIdMapping[msg.sender];
+    require(_addressBusinessIdMapping[msg.sender] > 0, "Only registered business can mint token");
+    uint256 businessId = _addressBusinessIdMapping[msg.sender];
     uint256 tokenIndex = ++_tokenIndexNonce;
 
-    uint256 tokenId = brandId + tokenIndex;
+    uint256 tokenId = businessId + tokenIndex;
 
     Token memory token = Token(tokenId, customerAddress, cid, new string[](0));
 
     _tokens[tokenId] = token;
-    _brandTokens[brandId].push(token);
+    _businessTokens[businessId].push(token);
     _ownerTokens[customerAddress].push(token);
 
-    _mint(customerAddress, brandId, 1, "");
+    _mint(customerAddress, businessId, 1, "");
     _mint(customerAddress, tokenId, 1, bytes(cid));
   }
 
   function addLog(uint256 tokenId, string memory uri) public {
-    require(brandIdOf(msg.sender) == brandIdOf(tokenId), "Only token owner can add log");
+    require(businessIdOf(msg.sender) == businessIdOf(tokenId), "Only token owner can add log");
     _tokens[tokenId].logCIDs.push(uri);
   }
 
@@ -62,12 +72,16 @@ contract TrueToken is ERC1155 {
     _ownerTokens[_from].pop();
   }
 
-  function brandIdOf(uint256 tokenId) public view virtual returns (uint256) {
+  function businessIdOf(uint256 tokenId) public view virtual returns (uint256) {
     return tokenId & BRAND_MASK;
   }
 
-  function brandIdOf(address account) public view virtual returns (uint256) {
-    return _addressBrandIdMapping[account];
+  function businessIdOf(address account) public view virtual returns (uint256) {
+    return _addressBusinessIdMapping[account];
+  }
+
+  function business(uint256 businessId) public view virtual returns (Business memory) {
+    return _businessMapping[businessId];
   }
 
   function logsOf(uint256 tokenId) public view virtual returns (string[] memory) {
@@ -78,8 +92,8 @@ contract TrueToken is ERC1155 {
     return _tokens[tokenId].metadataCID;
   }
 
-  function tokenIssuedBy(uint256 brandId) public view virtual returns (Token[] memory) {
-    return _brandTokens[brandId];
+  function tokenIssuedBy(uint256 businessId) public view virtual returns (Token[] memory) {
+    return _businessTokens[businessId];
   }
 
   function tokenOwnedBy(address account) public view virtual returns (Token[] memory) {
@@ -87,5 +101,5 @@ contract TrueToken is ERC1155 {
   }
 }
 
-// first brandId: 340282366920938463463374607431768211456
+// first businessId: 340282366920938463463374607431768211456
 // firs tokenId: 340282366920938463463374607431768211457

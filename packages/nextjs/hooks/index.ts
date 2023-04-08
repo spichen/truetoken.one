@@ -1,1 +1,1 @@
-export * from "./useRegisterBrand";
+export * from "./useRegisterBusiness";

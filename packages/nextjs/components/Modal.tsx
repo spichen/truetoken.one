@@ -1,3 +1,5 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
 export default function Modal({
   open,
   onRequestClose,
@@ -14,24 +16,18 @@ export default function Modal({
       {open ? (
         <>
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            <div className="relative w-auto my-6 mx-auto max-w-3xl">
-              {/*content*/}
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                {/*header*/}
-                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                  <h3 className="text-3xl font-semibold">{title}</h3>
+            <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:col-span-2 sm:px-12 lg:col-span-1 lg:row-span-2">
+              <div className="relative">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{title}</h2>
                   <button
-                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                    onClick={() => onRequestClose()}
+                    onClick={onRequestClose}
+                    className="group relative flex h-10 w-10 items-center justify-center before:absolute before:inset-0 before:rounded-full before:border before:border-gray-200 before:bg-gray-50 before:bg-gradient-to-b before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800"
                   >
-                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                      ×
-                    </span>
+                    <XMarkIcon className="h-5 w-5 z-10 text-gray-500" />
                   </button>
                 </div>
-                {/*body*/}
-                {children}
-                {/*footer*/}
+                <div>{children}</div>
               </div>
             </div>
           </div>
@@ -48,16 +44,16 @@ const ModalAction = ({
   actions: { title: string; type?: "button" | "submit" | "reset"; onClick?: () => void }[];
 }) => {
   return (
-    <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+    <div className="flex item-right mt-8">
       {actions.map(action => {
         return (
           <button
             key={action.title}
-            className="btn btn-primary"
+            className="relative ml-auto flex h-11 w-max items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 active:duration-75 active:before:scale-95 dark:before:bg-primaryLight"
             type={action?.type || "button"}
             onClick={() => action.onClick?.()}
           >
-            {action.title}
+            <span className="relative text-base font-semibold text-white dark:text-gray-900">{action.title}</span>
           </button>
         );
       })}

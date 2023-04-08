@@ -60,20 +60,29 @@ export const AddressInput = ({ value, name, placeholder, onChange }: CommonInput
       disabled={isEnsAddressLoading || isEnsNameLoading}
       prefix={
         ensName && (
-          <div className="flex bg-base-300 rounded-l-full items-center">
+          <div className="flex bg-base-300 rounded-l-lg items-center border-l border-y border-gray-200 dark:border-gray-700">
             {ensAvatar ? (
-              <span className="w-[35px]">
+              <span className="w-[42px] rounded-l-lg">
                 {
                   // eslint-disable-next-line
-                  <img className="w-full rounded-full" src={ensAvatar} alt={`${ensAddress} avatar`} />
+                  <img className="w-full rounded-l-lg" src={ensAvatar} alt={`${ensAddress} avatar`} />
                 }
               </span>
             ) : null}
-            <span className="text-accent px-2">{enteredEnsName ?? ensName}</span>
+            <span className="text-white px-2">{enteredEnsName ?? ensName}</span>
           </div>
         )
       }
-      suffix={value && <Blockies className="!rounded-full" seed={value?.toLowerCase() as string} size={7} scale={5} />}
+      suffix={
+        value && (
+          <Blockies
+            className="rounded-r-lg border-l border-y border-gray-200 dark:border-gray-700"
+            seed={value?.toLowerCase() as string}
+            size={9}
+            scale={5}
+          />
+        )
+      }
     />
   );
 };
