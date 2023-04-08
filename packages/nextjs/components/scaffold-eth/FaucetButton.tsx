@@ -47,13 +47,13 @@ export const FaucetButton = () => {
       data-tip="Grab funds from faucet"
     >
       <button
-        className={`btn btn-secondary btn-sm px-2 rounded-full ${
+        className={`group relative hidden h-9 w-9 rounded-full before:absolute before:inset-0 before:rounded-full before:border before:border-gray-200 before:bg-gray-50 before:bg-gradient-to-b before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800 lg:flex ${
           loading ? "loading before:!w-4 before:!h-4 before:!mx-0" : ""
         }`}
         onClick={sendETH}
         disabled={loading}
       >
-        {!loading && <BanknotesIcon className="h-4 w-4" />}
+        {!loading && <BanknotesIcon className="h-4 w-4 z-10 text-white m-auto" />}
       </button>
     </div>
   );

@@ -2,7 +2,30 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-:root,
+body {
+  font-family: "Urbanist";
+}
+
+@layer components {
+  .navbar-active #hamburger div:first-child {
+      @apply translate-y-1.5 rotate-45;
+  }
+  .navbar-active #hamburger div:last-child {
+      @apply -translate-y-1 -rotate-45;
+  }
+  .navbar-active #layer {
+      @apply origin-top scale-y-100;
+  }
+  .navbar-active #navlinks {
+      @apply visible block scale-100 opacity-100 lg:flex lg:translate-y-0;
+  }
+}
+
+.st0 {
+  @apply fill-secondaryLight;
+}
+
+/* :root,
 [data-theme] {
   background: hsl(var(--b2));
 }
@@ -22,11 +45,6 @@ h4 {
 p {
   margin: 1rem 0;
 }
-
 .btn {
-  @apply shadow-md;
-}
-
-.btn.btn-ghost {
-  @apply shadow-none;
-}
+  text-transform: none;
+} */

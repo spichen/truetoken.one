@@ -3,33 +3,21 @@ import Head from "next/head";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import ManageBrand from "~~/components/ManageBrand";
 import RegisterBrand from "~~/components/RegisterBrand";
-import {
-  useAutoConnect,
-  useDeployedContractInfo,
-  useNetworkColor,
-  useScaffoldContractRead,
-} from "~~/hooks/scaffold-eth";
-import { getTargetNetwork, notification } from "~~/utils/scaffold-eth";
+import { useAutoConnect, useScaffoldContractRead } from "~~/hooks/scaffold-eth";
+import { notification } from "~~/utils/scaffold-eth";
 
 const Brand: NextPage = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [brandId, setBrandId] = useState<string | undefined>();
   useAutoConnect();
-  const networkColor = useNetworkColor();
-  const configuredNetwork = getTargetNetwork();
-  const { address } = useAccount();
+  const account = useAccount();
 
-  const { data: contract } = useDeployedContractInfo("TrueToken");
-
-  console.log(contract);
-
-  const { data } = useScaffoldContractRead({
+  const { data, isLoading } = useScaffoldContractRead({
     contractName: "TrueToken",
     functionName: "brandIdOf",
-    args: [address],
+    args: [account.address],
   });
 
   useEffect(() => {
@@ -38,6 +26,7 @@ const Brand: NextPage = () => {
       setBrandId(data?.toString());
     }
   }, [data]);
+
   return (
     <>
       <Head>
@@ -45,57 +34,42 @@ const Brand: NextPage = () => {
         <meta name="description" content="NFT Platform for physical assets" />
       </Head>
 
-      <div>
-        <ConnectButton.Custom>
-          {({ account, chain, openConnectModal, openChainModal, mounted }) => {
-            const connected = mounted && account && chain;
-
-            return (
-              <>
-                {(() => {
-                  if (!connected) {
-                    return (
-                      <button className="btn btn-primary btn-sm" onClick={openConnectModal} type="button">
-                        Connect Wallet
-                      </button>
-                    );
-                  }
-
-                  if (chain.unsupported || chain.id !== configuredNetwork.id) {
-                    return (
-                      <>
-                        <span className="text-xs" style={{ color: networkColor }}>
-                          {configuredNetwork.name}
-                        </span>
-                        <button className="btn btn-sm btn-error ml-2" onClick={openChainModal} type="button">
-                          <span>Wrong network</span>
-                          <ChevronDownIcon className="h-6 w-4 ml-2 sm:ml-0" />
-                        </button>
-                      </>
-                    );
-                  }
-
-                  return isRegistered && brandId ? (
-                    <ManageBrand brandId={brandId} />
-                  ) : (
-                    <div className="flex min-h-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-                      <div className="w-full max-w-md space-y-8">
-                        <RegisterBrand
-                          address={account.address}
-                          onSuccess={brandId => {
-                            setBrandId(brandId);
-                            setIsRegistered(true);
-                            notification.success(<div>Registered successfully. Your brand ID is {brandId}</div>);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
-              </>
-            );
-          }}
-        </ConnectButton.Custom>
+      <div className="flex items-center flex-col flex-grow">
+        {account.isDisconnected && (
+          <div className="hero min-h-screen bg-base-200">
+            <div className="hero-content text-center">
+              <div className="max-w-md">
+                <div>
+                  <h1 className="text-center mb-8">
+                    <span className="block text-2xl mb-2">Welcome to</span>
+                    <span className="block text-4xl font-bold">TrueToken</span>
+                  </h1>
+                  <p className="text-center text-lg">Connect your wallet to get started</p>
+                  <div className="flex flex-col justify-center items-center">
+                    <ConnectButton />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {isLoading && <div>Loading...</div>}
+        {account.isConnected && isRegistered && brandId ? (
+          <ManageBrand brandId={brandId} />
+        ) : (
+          <div className="flex min-h-full items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+            <div className="w-full max-w-md space-y-8">
+              <RegisterBrand
+                address={account.address ?? ""}
+                onSuccess={brandId => {
+                  setBrandId(brandId);
+                  setIsRegistered(true);
+                  notification.success(<div>Registered successfully. Your brand ID is {brandId}</div>);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

@@ -18,8 +18,6 @@ const ServiceLogsModal = ({ open, onRequestClose, tokenId }: Props) => {
     args: [tokenId ? BigNumber.from(tokenId) : BigNumber.from(0)],
   });
 
-  console.log("logCids", logCids);
-
   useEffect(() => {
     (async () => {
       if (!logCids) return;

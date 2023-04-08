@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import config from "~~/truetoken.config";
 import { TrueToken } from "~~/types/truetoken";
 
 type TokenMetadata = {
@@ -33,12 +34,19 @@ const TokenCard = ({
       setMetadata(json);
     })();
   }, [token]);
+
+  const logsFeatureEnabled = config.featureToggle.serviceLogs;
+
   return (
     <>
       <div className="card w-96 bg-base-100 shadow-xl">
         <figure style={{ borderRadius: "5px", overflow: "hidden" }}>
           <Image
-            src={metadata?.image.replace(`ipfs://`, `https://ipfs.io/ipfs/`) || ""}
+            src={
+              metadata?.image
+                ? `${metadata?.image.replace(`ipfs://`, `https://ipfs.io/ipfs/`)}"#x-ipfs-companion-no-redirect"`
+                : ""
+            }
             height={100}
             width={100}
             alt=""
@@ -51,9 +59,11 @@ const TokenCard = ({
             <button onClick={() => onTransferClick(token.id)} className="btn btn-primary">
               Transfer
             </button>
-            <button onClick={() => onServiceLogsClick(token.id)} className="btn btn-primary">
-              Logs
-            </button>
+            {logsFeatureEnabled && (
+              <button onClick={() => onServiceLogsClick(token.id)} className="btn btn-primary">
+                Logs
+              </button>
+            )}
           </div>
         </div>
       </div>

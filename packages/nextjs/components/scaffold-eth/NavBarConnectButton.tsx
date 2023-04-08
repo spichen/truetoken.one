@@ -1,13 +1,10 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { Balance, BlockieAvatar } from "~~/components/scaffold-eth";
+import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useAutoConnect, useNetworkColor } from "~~/hooks/scaffold-eth";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 
-/**
- * Custom Wagmi Connect Button (watch balance + custom design)
- */
-export const RainbowKitCustomConnectButton = () => {
+export const NavBarConnectButton = () => {
   useAutoConnect();
 
   const networkColor = useNetworkColor();
@@ -23,8 +20,14 @@ export const RainbowKitCustomConnectButton = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <button className="btn btn-primary btn-sm" onClick={openConnectModal} type="button">
-                    Connect Wallet
+                  <button
+                    className="relative ml-auto flex h-9 w-full items-center justify-center before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-primaryLight sm:px-4 lg:before:border lg:before:border-gray-200 lg:before:bg-gray-100 lg:dark:before:bg-gray-800"
+                    onClick={openConnectModal}
+                    type="button"
+                  >
+                    <span className="relative text-sm font-semibold text-white dark:text-gray-900 lg:text-primary lg:dark:text-white">
+                      Connect Wallet
+                    </span>
                   </button>
                 );
               }
@@ -46,20 +49,24 @@ export const RainbowKitCustomConnectButton = () => {
               return (
                 <div className="px-2 flex justify-end items-center">
                   <div className="flex justify-center items-center border-1 rounded-lg">
-                    <div className="flex flex-col items-center">
-                      <Balance address={account.address} className="min-h-0 h-auto" />
-                      <span className="text-xs" style={{ color: networkColor }}>
+                    <div className="flex flex-col items-center mr-3">
+                      <span
+                        className="transition hover:text-primary dark:hover:text-primaryLight"
+                        style={{ color: networkColor }}
+                      >
                         {chain.name}
                       </span>
                     </div>
                     <button
                       onClick={openAccountModal}
                       type="button"
-                      className="btn btn-secondary btn-sm pl-0 pr-2 shadow-md"
+                      className="relative ml-auto flex h-9 w-full items-center justify-center before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition-transform before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-primaryLight sm:pr-4 pl-1 lg:before:border lg:before:border-gray-200 lg:before:bg-gray-100 lg:dark:before:bg-gray-800"
                     >
-                      <BlockieAvatar address={account.address} size={24} ensImage={account.ensAvatar} />
-                      <span className="ml-2 mr-1">{account.displayName}</span>
-                      <span>
+                      <BlockieAvatar address={account.address} size={25} ensImage={account.ensAvatar} />
+                      <span className="relative text-sm font-semibold text-white dark:text-gray-900 lg:text-primary lg:dark:text-white px-2">
+                        {account.displayName}
+                      </span>
+                      <span className="z-10 text-white">
                         <ChevronDownIcon className="h-6 w-4" />
                       </span>
                     </button>
