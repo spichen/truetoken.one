@@ -43,8 +43,8 @@ const Brand: NextPage = () => {
           <div className="items-center justify-center space-y-6 md:flex md:gap-6 md:space-y-0">
             <div className="md:w-1/2 lg:w-3/5">
               <Image
-                className="h-full rounded-3xl object-cover md:-ml-8"
-                src="/assets/images/hero-stats-login.webp"
+                className="h-full md:-ml-8"
+                src="/assets/images/business-deal.svg"
                 alt="tailus components"
                 loading="lazy"
                 width={1865}

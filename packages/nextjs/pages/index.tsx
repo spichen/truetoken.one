@@ -78,7 +78,7 @@ const Home: NextPage = () => {
               <div className="mt-12 w-full overflow-hidden sm:mt-20 lg:-mt-8 lg:w-6/12">
                 <Image
                   className="w-full"
-                  src="/assets/images/team.svg"
+                  src="/assets/images/shopping-bags.svg"
                   alt="project illustration"
                   height={600}
                   width={800}
