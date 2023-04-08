@@ -3,7 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import ManageBrand from "~~/components/ManageBrand";
+import ManageBusiness from "~~/components/ManageBusiness";
 import RegisterBusiness from "~~/components/RegisterBusiness";
 import { PrimaryConnectButton } from "~~/components/scaffold-eth/PrimaryConnectButton";
 import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
@@ -29,7 +29,7 @@ const Brand: NextPage = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
-  if (account.isConnected && isRegistered && brandId) return <ManageBrand brandId={brandId} />;
+  if (account.isConnected && isRegistered && brandId) return <ManageBusiness brandId={brandId} />;
 
   return (
     <>

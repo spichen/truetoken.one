@@ -14,7 +14,7 @@ type Props = {
   brandId: string;
 };
 
-const ManageBrand = ({ brandId }: Props) => {
+const ManageBusiness = ({ brandId }: Props) => {
   const [modalMintIsOpen, setMintIsOpen] = useState(false);
   const [modalServiceLogIsOpen, setServiceLogIsOpen] = useState(false);
   const [modalAddServiceLogIsOpen, setAddServiceLogIsOpen] = useState(false);
@@ -44,6 +44,14 @@ const ManageBrand = ({ brandId }: Props) => {
     args: [BigNumber.from(brandId)],
   });
 
+  const { data: business } = useScaffoldContractRead({
+    contractName: "TrueToken",
+    functionName: "business",
+    args: [BigNumber.from(brandId)],
+  });
+
+  const businessName = business && (business as unknown as any[])[2];
+
   useEffect(() => {
     if (rawTokens) {
       setTokens(getTokenFromContractResponse(rawTokens));
@@ -61,7 +69,12 @@ const ManageBrand = ({ brandId }: Props) => {
       <section id="manage-business" className="pt-32">
         <div className="mx-auto px-4 sm:px-12 xl:max-w-6xl xl:px-0">
           <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">Manage Tokens</h3>
+            <div>
+              <div className="text-sm font-semibold uppercase tracking-widest text-primary dark:text-secondaryLight">
+                {businessName}
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">Manage Tokens</h3>
+            </div>
             <button
               className="relative ml-auto h-12 w-16 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 active:duration-75 active:before:scale-95 dark:before:bg-primaryLight sm:w-auto sm:px-6"
               onClick={() => {
@@ -176,4 +189,4 @@ const ManageBrand = ({ brandId }: Props) => {
   );
 };
 
-export default ManageBrand;
+export default ManageBusiness;
